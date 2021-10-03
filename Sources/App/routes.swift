@@ -20,8 +20,10 @@ func routes(_ app: Application) throws {
                              tip: 0, total: bill.amount)
         }
         var calculatedTip = bill.amount * bill.tipPercentage / 100.0
+        
+        //Rounding to 2 decimal places
         var roundedTip = Decimal()
-        NSDecimalRound(&roundedTip, &calculatedTip, 2, .plain)  //Rounding to 2 decimal places
+        NSDecimalRound(&roundedTip, &calculatedTip, 2, .plain)
         
         let calculatedTotal = bill.amount + roundedTip
         

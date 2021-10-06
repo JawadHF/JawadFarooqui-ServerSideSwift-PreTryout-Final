@@ -1,0 +1,56 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { overflow: hidden; }
+    body { height: 100vh; font-size: 18px; background-color: #f2f2f2; color: #282828; }
+    h1   { margin: 1em; padding: 1em; color: black; }
+    div { margin: 1em; padding: 1em; }
+    button { margin: 1em; padding: 1em; }
+    .flex-container { min-height: 100vh; width: 100%; display: flex; flex-direction: column; align-items: center; }
+  </style>
+  <title>Tip Calculator</title>
+</head>
+<body>
+
+    <form method="post">
+      <div class="flex-container">
+        <h3>Tip Calculator</h3>
+        
+      #if(csrfToken):
+        <input type="hidden" name="csrfToken" value="#(csrfToken)">
+      #endif
+      
+      <div>
+        <label for="amount">Amount: </label>
+        <input name="amount" type="number"  min="0" step=".01" value="#(amount)" />
+      </div>
+
+      <div>
+        <label for="tipPercentage">Tip Percentage: </label>
+        <input name="tipPercentage" type="number" min="0" max="100" step=".01" value="#(tipPercentage)"/>
+      </div>
+
+    <div>
+        <b> Tip: #(tip) </b>
+    </div>
+    
+    <div>
+        <b> Total: #(total) </b>
+    </div>
+    
+        <button type="submit">
+         Calculate Bill with Tip
+        </button>
+        </div>
+    </form>
+
+</body>
+</html>
+
+

@@ -34,11 +34,13 @@ func routes(_ app: Application) throws {
         return total
     }
     
+    //Render initial HTML page with default data
     app.get("bill") { req -> EventLoopFuture<View> in
         let bill = BillData(amount: 0, tipPercentage: 15.0, tip: 0, total: 0)
         return req.view.render("bill", bill)
     }
     
+    //Receive form data, calculate tip and provide updated HTML page
     app.post("bill") { req -> EventLoopFuture<View> in
         let billForm = try req.content.decode(BillForm.self)
         let tipRange = 0.0..<100.0

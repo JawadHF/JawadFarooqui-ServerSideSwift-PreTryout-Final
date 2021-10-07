@@ -10,16 +10,12 @@ func routes(_ app: Application) throws {
     }
     
     app.post("bill", "total") { req throws -> TotalBill in
+        //Validate JSON data
+        try Bill.validate(content: req)
+        
+        //Decode JSON Payload from request body
         let bill = try req.content.decode(Bill.self)
-        //Validate Tip
-        let tipRange: Range<Decimal> = 0.0..<100.0
-        guard tipRange.contains(bill.tipPercentage) else {
-            throw Abort(.forbidden, reason: "Invalid tip percentage")
-        }
-        //Validate Amount
-        guard bill.amount >= 0 else {
-            throw Abort(.forbidden, reason: "Invalid amount")
-        }
+        
         //Calculate the tip based on the inputs provided
         var calculatedTip = bill.amount * bill.tipPercentage / 100.0
     
@@ -42,14 +38,8 @@ func routes(_ app: Application) throws {
     
     //Receive form data, calculate tip and provide updated HTML page
     app.post("bill") { req -> EventLoopFuture<View> in
+        try BillForm.validate(content: req)
         let billForm = try req.content.decode(BillForm.self)
-        let tipRange = 0.0..<100.0
-        guard tipRange.contains(billForm.tipPercentage) else {
-            throw Abort(.forbidden, reason: "Invalid tip percentage")
-        }
-        guard billForm.amount >= 0 else {
-            throw Abort(.forbidden, reason: "Invalid amount")
-        }
         let calculatedTip = billForm.amount * billForm.tipPercentage / 100.0
         let calculatedTotal = billForm.amount + calculatedTip
         let bill = BillData(amount: billForm.amount, tipPercentage: billForm.tipPercentage, tip: calculatedTip, total: calculatedTotal)
@@ -61,6 +51,13 @@ func routes(_ app: Application) throws {
 struct Bill: Content {
     let amount: Decimal
     let tipPercentage: Decimal
+}
+
+extension Bill: Validatable {
+    static func validations(_ validations: inout Validations) {
+        validations.add("amount", as: Decimal.self, is: .range(0.0...))
+        validations.add("tipPercentage", as: Decimal.self, is: .range(0.0...100.0))
+    }
 }
 
 struct TotalBill: Content {
@@ -76,9 +73,18 @@ struct BillForm: Decodable {
     let tipPercentage: Double
 }
 
+extension BillForm: Validatable {
+    static func validations(_ validations: inout Validations) {
+        validations.add("amount", as: Double.self, is: .range(0.0...))
+        validations.add("tipPercentage", as: Double.self, is: .range(0.0...100.0))
+    }
+}
+
 struct BillData: Encodable {
     let amount: Double
     let tipPercentage: Double
     let tip: Double
     let total: Double
 }
+
+
